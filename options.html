@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, sans-serif; background: #0f1117; color: #c9d1d9; padding: 24px; width: 400px; }
+    h2 { font-size: 16px; color: #00d4aa; margin-bottom: 16px; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; }
+    input[type=text] { width: 100%; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 8px 12px; color: #c9d1d9; font-size: 13px; margin-bottom: 12px; }
+    input[type=text]:focus { border-color: #00d4aa; outline: none; }
+    .checkbox { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+    button { background: #00d4aa; color: #0f1117; border: none; border-radius: 6px; padding: 8px 16px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+    .saved { color: #3fb950; font-size: 12px; margin-left: 12px; display: none; }
+    a { color: #00d4aa; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>DugganUSA Threat Intel Scanner</h2>
+
+  <label>API Key</label>
+  <input type="text" id="apiKey" placeholder="dugusa_YOUR_KEY_HERE">
+  <a href="https://analytics.dugganusa.com/stix/register" target="_blank">Get a free API key</a>
+
+  <br><br>
+
+  <div class="checkbox">
+    <input type="checkbox" id="enabled" checked>
+    <label for="enabled">Auto-scan pages for IOCs</label>
+  </div>
+
+  <button id="save">Save</button>
+  <span class="saved" id="saved">Saved!</span>
+
+  <script>
+    // Load saved settings
+    chrome.storage.sync.get(['apiKey', 'enabled'], (r) => {
+      document.getElementById('apiKey').value = r.apiKey || '';
+      document.getElementById('enabled').checked = r.enabled !== false;
+    });
+
+    document.getElementById('save').addEventListener('click', () => {
+      chrome.storage.sync.set({
+        apiKey: document.getElementById('apiKey').value.trim(),
+        enabled: document.getElementById('enabled').checked
+      }, () => {
+        const s = document.getElementById('saved');
+        s.style.display = 'inline';
+        setTimeout(() => s.style.display = 'none', 2000);
+      });
+    });
+  </script>
+</body>
+</html>
