@@ -8,6 +8,7 @@ const PATTERNS = {
   domain: /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:com|net|org|io|ai|dev|xyz|info|biz|co|me|app|cloud|online|site|tech|ru|cn|ir|kp|de|fr|nl|uk|au|br|jp|kr|sg|il|sa|ae)\b/gi,
   sha256: /\b[a-fA-F0-9]{64}\b/g,
   cve: /CVE-\d{4}-\d{4,7}/gi,
+  onion: /\b[a-z2-7]{56}\.onion\b/g,
 };
 
 const SKIP_IPS = new Set(['0.0.0.0','127.0.0.1','255.255.255.255','10.0.0.1','192.168.0.1','192.168.1.1','172.16.0.1','8.8.8.8','8.8.4.4','1.1.1.1','1.0.0.1','9.9.9.9']);
@@ -85,6 +86,21 @@ chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'lookup-result' && msg.result?.found) {
     const nodes = findTextNodes(document.body, msg.value);
     nodes.forEach(n => highlightIOC(n, msg.value, msg.result));
+  }
+  if (msg.type === 'tor-relay-result') {
+    const r = msg.result;
+    if (r && r.isRelay) {
+      const info = [
+        r.nickname ? 'Nickname: ' + r.nickname : null,
+        r.flags ? 'Flags: ' + r.flags : null,
+        r.country ? 'Country: ' + r.country : null,
+        r.asn ? 'ASN: ' + r.asn : null,
+        r.bandwidth ? 'Bandwidth: ' + r.bandwidth : null,
+      ].filter(Boolean).join(' | ');
+      alert('DugganUSA Tor Relay: ' + msg.value + ' IS a relay.\n' + info);
+    } else {
+      alert('DugganUSA Tor: ' + msg.value + ' is NOT a known Tor relay.');
+    }
   }
 });
 
