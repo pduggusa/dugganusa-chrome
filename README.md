@@ -1,8 +1,14 @@
 # DugganUSA Threat Intel Scanner — Chrome Extension
 
-**Every webpage is an IOC scanner. 1,080,000+ indicators. Free.**
+**Every webpage is an IOC scanner. 1.10M+ indicators. Free (registered key).**
 
 Scans any webpage for IPs, domains, SHA256 hashes, and CVEs. Highlights known threats with enrichment tooltips. Right-click any selected text for instant lookup. AIPM audit any domain. Popup quick-search.
+
+## What's New (v1.2.0)
+
+- **Backed by deeper supply-chain coverage** — the corpus now ingests OSV malicious-package feeds for **both npm and PyPI** (named-malicious, zero-heuristic) plus daily GitHub Hunt detections of malware-staging repos, so package names and repo references on a page can light up too.
+- **Three live, no-auth validation endpoints** prove feed quality: [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness) (novelty, ~75%+ unique vs ThreatFox), [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead) (timeliness, ~31 days ahead of CISA KEV), and [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation) (accuracy).
+- **STIX feed is now API-key-enforced** — set a **free registered key** in the options page (anonymous requests get 401). Register at [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register).
 
 ## Install
 
@@ -19,13 +25,13 @@ Load as unpacked extension (Chrome Web Store submission pending):
 - Red underline + tooltip on known-bad indicators
 - Right-click context menu lookup
 - Popup quick-search with shimmer button
-- Options page for API key configuration
+- Options page for API key configuration (register a free key — the feed is key-enforced)
 - Works on competitor blogs — see OUR enrichment on THEIR IOCs
 
 ## Part of the DugganUSA Ecosystem
 
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=DugganUSALLC.dugganusa-threat-intel)
-- [CLI Tool](https://github.com/pduggusa/dugganusa-cli) — `npx dugganusa-lookup`
+- [CLI Tool](https://github.com/pduggusa/dugganusa-cli) — `npx dugganusa-cli`
 - [GitHub Action](https://github.com/pduggusa/dugganusa-action)
 - [STIX Feed](https://analytics.dugganusa.com/api/v1/stix-feed)
 - [AIPM](https://aipmsec.com)
