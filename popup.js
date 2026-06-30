@@ -37,7 +37,7 @@ async function doLookup() {
     } else {
       resultDiv.className = 'result clean';
       resultValue.textContent = value;
-      resultSummary.textContent = 'Not found in 1.08M+ IOC index. Clean.';
+      resultSummary.textContent = 'Not found in 1.5M+ IOC index. Clean.';
     }
   });
 }
