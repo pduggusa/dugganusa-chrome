@@ -85,17 +85,26 @@ async function lookupIOC(value) {
 
   try {
     const res = await fetch(url, { headers });
+    // fetch() only rejects on network failure. A 401 (anonymous access is
+    // disabled on this API, and the key is OPTIONAL in this extension), a 429,
+    // or a 5xx all resolve normally with a JSON error body whose absent
+    // `correlations` was counted as zero hits and rendered as "Clean".
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     const correlations = json.data?.correlations || {};
     const hits = Object.values(correlations)
       .reduce((s, h) => s + (Array.isArray(h) ? h.length : 0), 0);
     const result = hits > 0
-      ? { found: true, hits, data: correlations }
-      : { found: false, hits: 0 };
+      ? { ok: true, status: 'found', found: true, hits, data: correlations }
+      : { ok: true, status: 'not-found', found: false, hits: 0 };
     cache.set(key, { ts: Date.now(), result });
     return result;
   } catch (e) {
-    return { found: false, hits: 0, error: e.message };
+    // Absence of evidence is not evidence of safety. This returned a bare
+    // { found: false } — indistinguishable from a verified-clean lookup — so an
+    // expired key or an outage made every indicator render as "Clean".
+    // NOT cached: caching a failure would pin a wrong verdict for the full TTL.
+    return { ok: false, status: 'unknown', found: false, hits: 0, error: e.message || 'lookup failed' };
   }
 }
 
@@ -107,6 +116,7 @@ async function checkTorRelay(ip) {
 
   try {
     const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     const relays = json.data?.relays || json.data || [];
     if (Array.isArray(relays) && relays.length > 0) {
@@ -120,9 +130,10 @@ async function checkTorRelay(ip) {
         bandwidth: r.bandwidth || null,
       };
     }
-    return { isRelay: false };
+    return { ok: true, status: 'not-found', isRelay: false };
   } catch (e) {
-    return { isRelay: false, error: e.message };
+    // Unknown, not "not a relay" — same fail-open class as lookupIOC above.
+    return { ok: false, status: 'unknown', isRelay: false, error: e.message || 'lookup failed' };
   }
 }
 
