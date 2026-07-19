@@ -1,8 +1,55 @@
 # DugganUSA Threat Intel Scanner — Chrome Extension
 
-**Every webpage is an IOC scanner. 1.5M+ indicators. Free (registered key).**
+**Any webpage, on demand. 1.5M+ indicators. Free (registered key). Auto-scan off by default.**
 
 Scans any webpage for IPs, domains, SHA256 hashes, and CVEs. Highlights known threats with enrichment tooltips. Right-click any selected text for instant lookup. AIPM audit any domain. Popup quick-search.
+
+## Privacy — auto-scan is OFF by default (v1.2.3)
+
+**Correction to earlier versions.** Up to and including v1.2.2 this extension auto-scanned
+every page on a fresh install, before you had touched a single setting. That is fixed:
+auto-scan is now **opt-out by default in the strict sense — it does nothing until you turn it on.**
+
+**Nothing is read from a page and nothing leaves your browser until you explicitly act.**
+
+### What is collected when you enable auto-scan
+
+With auto-scan ON, for every page you visit the extension reads the rendered text
+(`document.body.innerText`), extracts up to **30** indicators, and sends **those extracted
+values** to `https://analytics.dugganusa.com/api/v1/search/correlate` to check them against
+the threat feed:
+
+- IPv4 addresses
+- Domain names
+- SHA256 hashes
+- CVE identifiers
+- `.onion` addresses
+
+That set **includes internal hostnames, private IP addresses, and staging domains** that
+happen to be rendered on the page — including on intranet, HR, banking and healthcare
+portals. We do not send page contents, URLs, form fields, or credentials; but the extracted
+indicators alone are enough to leak internal network naming out of an organisation. Treat
+enabling auto-scan as an organisational decision, not a personal preference.
+
+The page text is processed **locally**; only the extracted indicator values are transmitted.
+Requests carry your API key if you have set one. Results are cached in memory for 5 minutes.
+
+### What happens with auto-scan OFF (the default)
+
+Nothing is extracted and nothing is transmitted on page load. The extension stays fully
+usable on demand:
+
+- **Popup → "Scan this page"** — scans the current page once, when you click it
+- **Right-click selected text → DugganUSA lookup** — sends only the text you selected
+- **Popup quick-search** — sends only the value you type
+
+The popup always shows the current auto-scan state (ON/OFF) so it is never ambiguous.
+
+### Turning auto-scan on
+
+It is a deliberate action: open the extension's options page and tick
+**"Auto-scan every page for IOCs"**. The box is unchecked on a fresh install, and a
+missing or unset preference is treated as OFF (fail-closed).
 
 ## What's New (v1.2.1)
 
@@ -21,7 +68,8 @@ Load as unpacked extension (Chrome Web Store submission pending):
 
 ## Features
 
-- Auto-scan every page for IOCs (toggleable)
+- On-demand page scan from the popup ("Scan this page") — no background collection
+- Optional auto-scan of every page (**off by default**, opt in via the options page)
 - Red underline + tooltip on known-bad indicators
 - Right-click context menu lookup
 - Popup quick-search with shimmer button

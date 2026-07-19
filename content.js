@@ -1,6 +1,11 @@
 /**
  * Content script — scans page text for IOCs and highlights matches.
- * Runs on every page. Lightweight: only scans visible text, capped at 30 lookups.
+ *
+ * PRIVACY: auto-scanning is OFF BY DEFAULT. Nothing is extracted from the page
+ * and nothing is sent to the API until the user explicitly opts in by enabling
+ * "Auto-scan pages for IOCs" in the options page. Missing/undefined settings are
+ * treated as DISABLED (fail-closed). On-demand scanning stays available at any
+ * time via the popup's "Scan this page" button and the right-click context menu.
  */
 
 const PATTERNS = {
@@ -105,40 +110,69 @@ chrome.runtime.onMessage.addListener((msg) => {
 });
 
 /**
- * Main scan — runs on page load.
+ * Auto-scan gate — DEFAULT OFF.
+ *
+ * Returns true ONLY when the user has explicitly stored enabled === true.
+ * undefined (fresh install), {}, null, and false all return false. This is the
+ * opposite of the old `enabled !== false` test, which scanned every page on a
+ * fresh install before the user had ever seen a setting.
  */
-async function scanPage() {
-  // Check if scanning is enabled
+async function isAutoScanEnabled() {
   const settings = await new Promise(r => chrome.storage.sync.get(['enabled'], r));
-  if (settings.enabled === false) return;
+  return settings?.enabled === true;
+}
+
+/**
+ * Main scan.
+ *
+ * On page load this runs ONLY if the user explicitly opted in. A manual scan
+ * ({ manual: true }) is an explicit user action (popup button) and bypasses the
+ * auto-scan preference by design — the user asked for this page, right now.
+ */
+async function scanPage(opts = {}) {
+  const manual = opts.manual === true;
+
+  if (!manual && !(await isAutoScanEnabled())) return { scanned: false, reason: 'auto-scan-disabled' };
 
   const text = document.body?.innerText || '';
-  if (text.length < 10) return;
+  if (text.length < 10) return { scanned: true, threats: 0 };
 
   const iocs = extractIOCs(text);
-  if (!iocs.length) return;
+  if (!iocs.length) return { scanned: true, threats: 0 };
 
   // Batch lookup via background service worker (max 30)
   const values = iocs.slice(0, 30).map(i => i.value);
-  chrome.runtime.sendMessage({ type: 'batch-lookup', values }, (results) => {
-    if (!results) return;
-    const threats = results.filter(r => r.found);
-    if (!threats.length) return;
+  const results = await new Promise(r => chrome.runtime.sendMessage({ type: 'batch-lookup', values }, r));
+  if (!results) return { scanned: true, threats: 0 };
 
-    // Highlight each threat on the page
-    for (const threat of threats) {
-      const nodes = findTextNodes(document.body, threat.value);
-      nodes.forEach(n => highlightIOC(n, threat.value, threat));
-    }
+  const threats = results.filter(r => r.found);
+  if (!threats.length) return { scanned: true, threats: 0 };
 
-    // Badge: show count
-    chrome.runtime.sendMessage({ type: 'set-badge', count: threats.length });
-  });
+  // Highlight each threat on the page
+  for (const threat of threats) {
+    const nodes = findTextNodes(document.body, threat.value);
+    nodes.forEach(n => highlightIOC(n, threat.value, threat));
+  }
+
+  // Badge: show count
+  chrome.runtime.sendMessage({ type: 'set-badge', count: threats.length });
+  return { scanned: true, threats: threats.length };
 }
 
-// Run scan after page settles
+// On-demand scan requested by the user from the popup. Explicit user action, so
+// it runs regardless of the auto-scan preference.
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === 'scan-page-now') {
+    scanPage({ manual: true })
+      .then(sendResponse)
+      .catch(e => sendResponse({ scanned: false, error: e.message }));
+    return true; // async response
+  }
+});
+
+// Auto-scan on page load — gated on explicit opt-in inside scanPage().
 if (document.readyState === 'complete') {
-  setTimeout(scanPage, 1000);
+  setTimeout(() => scanPage({ manual: false }), 1000);
 } else {
-  window.addEventListener('load', () => setTimeout(scanPage, 1000));
+  window.addEventListener('load', () => setTimeout(() => scanPage({ manual: false }), 1000));
 }

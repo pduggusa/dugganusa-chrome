@@ -44,3 +44,50 @@ async function doLookup() {
 
 btn.addEventListener('click', doLookup);
 input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLookup(); });
+
+// --- On-demand page scan + auto-scan state -------------------------------
+// Auto-scan is OFF by default. This button is the explicit, per-page opt-in
+// that keeps the extension useful without scanning everything you browse.
+
+const scanPageBtn = document.getElementById('scanPageBtn');
+const autoState = document.getElementById('autoState');
+
+function renderAutoState(enabled) {
+  autoState.textContent = 'Auto-scan: ';
+  const badge = document.createElement('span');
+  badge.className = enabled ? 'on' : 'off';
+  badge.textContent = enabled ? 'ON' : 'OFF';
+  autoState.appendChild(badge);
+  autoState.appendChild(document.createTextNode(
+    enabled
+      ? ' - every page you visit is scanned. Change in options.'
+      : ' (default) - nothing is sent until you scan. Enable in options.'
+  ));
+}
+
+chrome.storage.sync.get(['enabled'], (r) => renderAutoState(r?.enabled === true));
+
+scanPageBtn.addEventListener('click', async () => {
+  scanPageBtn.textContent = 'Scanning...';
+  scanPageBtn.disabled = true;
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) {
+    scanPageBtn.textContent = 'No active tab';
+    scanPageBtn.disabled = false;
+    return;
+  }
+
+  chrome.tabs.sendMessage(tab.id, { type: 'scan-page-now' }, (res) => {
+    scanPageBtn.disabled = false;
+    if (chrome.runtime.lastError || !res) {
+      scanPageBtn.textContent = 'Cannot scan this page';
+      setTimeout(() => { scanPageBtn.textContent = 'Scan this page'; }, 2500);
+      return;
+    }
+    scanPageBtn.textContent = res.threats
+      ? res.threats + ' threat(s) highlighted'
+      : 'No known threats found';
+    setTimeout(() => { scanPageBtn.textContent = 'Scan this page'; }, 2500);
+  });
+});

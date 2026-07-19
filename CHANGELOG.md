@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.2.3] - 2026-07-19
+
+### Security / Privacy
+- **Auto-scan is now OFF by default.** Through v1.2.2 the content script ran on
+  `<all_urls>` and scanned every page on load unless `enabled` was explicitly `false`,
+  so a fresh install with no stored settings scanned everything and shipped up to 30
+  extracted indicators per page to the API before the user had seen a setting. Internal
+  hostnames, private IPs and staging domains rendered on intranet, HR, banking and
+  healthcare pages left the browser by default. The gate is now fail-closed: auto-scan
+  requires an explicit stored `enabled === true`; undefined, `{}` and `false` all disable it.
+- Options page checkbox now defaults to unchecked and states plainly what is transmitted
+  when it is turned on.
+
+### Added
+- Popup "Scan this page" button for explicit, per-page on-demand scanning, so the
+  extension stays useful with auto-scan off.
+- Popup shows the current auto-scan state (ON/OFF).
+
+### Changed
+- README documents exactly what is collected when auto-scan is enabled, and explicitly
+  corrects the earlier default-on behaviour rather than quietly changing it.
+
 ## [1.2.2] - 2026-06-30
 
 ### Fixed

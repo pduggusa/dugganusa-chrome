@@ -11,6 +11,8 @@
     button { background: #00d4aa; color: #0f1117; border: none; border-radius: 6px; padding: 8px 16px; font-weight: 700; cursor: pointer; margin-top: 12px; }
     .saved { color: #3fb950; font-size: 12px; margin-left: 12px; display: none; }
     a { color: #00d4aa; font-size: 12px; }
+    .note { font-size: 11px; color: #8b949e; line-height: 1.5; margin: 8px 0 0 24px; }
+    .note strong { color: #c9d1d9; }
   </style>
 </head>
 <body>
@@ -23,9 +25,21 @@
   <br><br>
 
   <div class="checkbox">
-    <input type="checkbox" id="enabled" checked>
-    <label for="enabled">Auto-scan pages for IOCs</label>
+    <input type="checkbox" id="enabled">
+    <label for="enabled">Auto-scan every page for IOCs (off by default)</label>
   </div>
+  <p class="note">
+    When ON, the extension reads the visible text of <strong>every page you visit</strong>,
+    extracts up to 30 IPs, domains, SHA256 hashes and CVEs, and sends those values to
+    analytics.dugganusa.com to be checked against the threat feed. That includes internal
+    hostnames, private IPs and staging domains rendered on intranet, HR, banking and
+    healthcare pages. Leave this OFF unless you understand and accept that.
+  </p>
+  <p class="note">
+    With it OFF, nothing is read or transmitted automatically. You can still scan on demand:
+    click <strong>Scan this page</strong> in the toolbar popup, or right-click selected text
+    and choose the DugganUSA lookup.
+  </p>
 
   <button id="save">Save</button>
   <span class="saved" id="saved">Saved!</span>
@@ -34,7 +48,8 @@
     // Load saved settings
     chrome.storage.sync.get(['apiKey', 'enabled'], (r) => {
       document.getElementById('apiKey').value = r.apiKey || '';
-      document.getElementById('enabled').checked = r.enabled !== false;
+      // Default OFF: only an explicit stored `true` checks the box.
+      document.getElementById('enabled').checked = r.enabled === true;
     });
 
     document.getElementById('save').addEventListener('click', () => {
