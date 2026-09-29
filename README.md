@@ -1,6 +1,6 @@
 # DugganUSA Threat Intel Scanner — Chrome Extension
 
-**Any webpage, on demand. 1.5M+ indicators. Free (registered key). Auto-scan off by default.**
+**Any webpage, on demand. 1.9M+ indicators. Free (registered key). Auto-scan off by default.**
 
 Scans any webpage for IPs, domains, SHA256 hashes, and CVEs. Highlights known threats with enrichment tooltips. Right-click any selected text for instant lookup. AIPM audit any domain. Popup quick-search.
 
