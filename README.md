@@ -1,6 +1,10 @@
 # DugganUSA Threat Intel Scanner — Chrome Extension
 
-**Any webpage, on demand. 1.9M+ indicators. Free (registered key). Auto-scan off by default.**
+**You do you. I do me. We share contexts.**
+
+Your browsing stays yours; auto-scan is off, and the extension shares only what you choose to check.
+
+**Any webpage, on demand. Free (registered key, 10 queries/day). Auto-scan off by default.** Corpus size: [live counts](https://analytics.dugganusa.com/api/v1/search/stats).
 
 Scans any webpage for IPs, domains, SHA256 hashes, and CVEs. Highlights known threats with enrichment tooltips. Right-click any selected text for instant lookup. AIPM audit any domain. Popup quick-search.
 
@@ -94,7 +98,7 @@ MIT — [DugganUSA LLC](https://www.dugganusa.com)
 <!-- DUGGANUSA-FAMILY-FOOTER-V1 -->
 ## DugganUSA Defender Family
 
-Same threat corpus, surfaced wherever you live. Open source, MIT licensed, receipts on every repo.
+Same DugganUSA Feed, surfaced wherever you live. Open source, MIT licensed, receipts on every repo.
 
 | Plugin | Surface |
 |---|---|
@@ -111,8 +115,8 @@ Same threat corpus, surfaced wherever you live. Open source, MIT licensed, recei
 | [dugganusa-cli](https://github.com/pduggusa/dugganusa-cli) | CLI scanner |
 | **dugganusa-chrome** _(this repo)_ | Chrome extension |
 | [dugganusa-action](https://github.com/pduggusa/dugganusa-action) | GitHub Action |
-| [dredd-mcp](https://github.com/pduggusa/dredd-mcp) | Pre-flight MCP security (this repo) |
+| [dredd-mcp](https://github.com/pduggusa/dredd-mcp) | Dredd: pre-flight MCP security |
 
-Backed by the live DugganUSA threat intel platform: [analytics.dugganusa.com](https://analytics.dugganusa.com).
+Backed by the [DugganUSA Feed](https://analytics.dugganusa.com/stix). Numbers are live: [/api/v1/search/stats](https://analytics.dugganusa.com/api/v1/search/stats). Pricing: [analytics.dugganusa.com/stix/pricing](https://analytics.dugganusa.com/stix/pricing). Contact: help@dugganusa.com.
 
-_Jeevesus saves. Dredd judges._
+_Threat intelligence you can check._

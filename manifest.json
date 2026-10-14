@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "DugganUSA Threat Intel Scanner",
   "version": "1.2.4",
-  "description": "Scan any webpage for IPs, domains, hashes, and CVEs against 1.9M+ threat indicators. Auto-scan is off by default. Powered by the DugganUSA STIX feed.",
+  "description": "Scan any webpage for IPs, domains, hashes, and CVEs against the DugganUSA Feed. Auto-scan is off by default.",
   "permissions": [
     "storage",
     "activeTab",
