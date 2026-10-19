@@ -110,7 +110,7 @@ async function lookupIOC(value) {
 
 async function checkTorRelay(ip) {
   const apiKey = await getApiKey();
-  const url = API_URL + '/tor/relays?q=' + encodeURIComponent(ip) + '&limit=1';
+  const url = API_URL + '/tor/relays?q=' + encodeURIComponent(ip) + '&limit=5';
   const headers = {};
   if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
 
@@ -118,8 +118,12 @@ async function checkTorRelay(ip) {
     const res = await fetch(url, { headers });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
-    const relays = json.data?.relays || json.data || [];
-    if (Array.isArray(relays) && relays.length > 0) {
+    // /tor/relays returns { data: { hits: [...] } } (never an array at data), and the search is
+    // fuzzy (q=1.1.1.1 returns 89.247.27.1), so only an exact address match is a relay. Reading
+    // data.relays || data made every check "not a relay".
+    const hits = json.data?.hits || json.data?.relays || [];
+    const relays = Array.isArray(hits) ? hits.filter(h => h.address === ip || h.ip === ip) : [];
+    if (relays.length > 0) {
       const r = relays[0];
       return {
         isRelay: true,

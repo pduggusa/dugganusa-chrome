@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Tor relay check always said "not a relay".** `/tor/relays` returns `data.hits`, never an array at `data`, and its search is fuzzy. It now reads `data.hits` and requires an exact address match.
+- Popup no longer shows the stale "1.9M+ IOCs · 68M+ documents" line (live corpus is ~30M documents).
+
 ## [1.2.4] - 2026-09-29
 
 ### Security
