@@ -58,7 +58,7 @@ missing or unset preference is treated as OFF (fail-closed).
 ## What's New (v1.2.1)
 
 - **Backed by deeper supply-chain coverage** — the corpus now ingests OSV malicious-package feeds for **both npm and PyPI** (named-malicious, zero-heuristic) plus daily GitHub Hunt detections of malware-staging repos, so package names and repo references on a page can light up too.
-- **Four live, no-auth validation endpoints** prove feed quality: [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness) (novelty, ~75%+ unique vs ThreatFox), [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead) (timeliness — a live ledger of how far ahead of CISA KEV we flagged each exploited CVE, with positive leads, same-day, and no-receipt all shown honestly), [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation) (accuracy), and [feed-efficacy](https://analytics.dugganusa.com/api/v1/feed-efficacy) (liveness — opt-in consumer reports of when our indicators actually fire on real traffic, proof the feed is operationally live, not just large).
+- **Four live, no-auth validation endpoints** prove feed quality: [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness) (novelty: overlap with ThreatFox, so you can see what this feed adds beside it), [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead) (timeliness — a live ledger of when each exploited CVE entered our corpus next to its CISA KEV listing date, with receipts, including the ones we had no record of), [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation) (accuracy), and [feed-efficacy](https://analytics.dugganusa.com/api/v1/feed-efficacy) (liveness — opt-in consumer reports of when our indicators actually fire on real traffic, proof the feed is operationally live, not just large).
 - **STIX feed is now API-key-enforced** — set a **free registered key** in the options page (anonymous requests get 401). Register at [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register).
 
 ## Install
@@ -78,7 +78,7 @@ Load as unpacked extension (Chrome Web Store submission pending):
 - Right-click context menu lookup
 - Popup quick-search with shimmer button
 - Options page for API key configuration (register a free key — the feed is key-enforced)
-- Works on competitor blogs — see OUR enrichment on THEIR IOCs
+- Works on any vendor or researcher blog: check the IOCs they publish against the DugganUSA Feed
 
 ## Part of the DugganUSA Ecosystem
 
