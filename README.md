@@ -1,5 +1,7 @@
 # DugganUSA Threat Intel Scanner — Chrome Extension
 
+**Docs:** https://docs.dugganusa.com/quickstart/
+
 **You do you. I do me. We share contexts.**
 
 Your browsing stays yours; auto-scan is off, and the extension shares only what you choose to check.
